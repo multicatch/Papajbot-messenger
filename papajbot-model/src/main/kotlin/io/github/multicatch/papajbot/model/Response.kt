@@ -9,8 +9,16 @@ fun MessagingItem.respondWith(text: String? = null, attachment: Attachment? = nu
 
 data class ApiCall(
         val recipient: ConversationParticipant,
-        val message: ResponseMessage
+        val message: ResponseMessage? = null,
+        @JsonProperty("sender_action")
+        val senderAction: SenderAction? = null
 )
+
+enum class SenderAction {
+    @JsonProperty("typing_on") TYPING_ON,
+    @JsonProperty("typing_off") TYPING_OFF,
+    @JsonProperty("mark_seen") MARK_SEEN
+}
 
 data class ResponseMessage(
         val text: String? = null,
@@ -35,7 +43,7 @@ data class AttachmentPayload(
         val isReusable: Boolean? = null,
         @JsonProperty("template_type")
         val templateType: TemplateType? = null,
-        val elements: List<PayloadElement> = listOf()
+        val elements: List<PayloadElement>? = null
 )
 
 enum class TemplateType {

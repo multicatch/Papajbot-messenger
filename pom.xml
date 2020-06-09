@@ -12,6 +12,7 @@
         <module>papajbot-model</module>
         <module>papajbot-talk</module>
         <module>papajbot-server-core</module>
+        <module>papajbot-video-responses</module>
     </modules>
     <packaging>pom</packaging>
 

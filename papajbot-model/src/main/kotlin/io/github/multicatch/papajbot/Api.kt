@@ -20,22 +20,22 @@ class MessengerApi(
 ) {
     private val logger = LoggerFactory.getLogger(MessengerApi::class.java.name)
 
-    fun configure(configuration: MessengerConfiguration) {
+    fun configure(configuration: MessengerConfiguration): String? {
         val requestBody = json.writeValueAsString(configuration)
-        runBlocking {
+        return runBlocking {
             logger.info("Sending configuration: $requestBody")
             send("messenger_profile", requestBody)
         }
     }
 
-    fun send(apiCall: ApiCall) {
+    fun send(apiCall: ApiCall): String? {
         val requestBody = json.writeValueAsString(apiCall)
-        runBlocking {
+        return runBlocking {
             send("messages", requestBody)
         }
     }
 
-    private suspend fun send(endpoint: String, requestBody: String) {
+    private suspend fun send(endpoint: String, requestBody: String): String? {
         val fullUrl = """$url$endpoint"""
         logger.debug("Messenger API request to $fullUrl: $requestBody")
         try {
@@ -44,9 +44,11 @@ class MessengerApi(
                 body = requestBody
             }
             logger.debug("Messenger API response: $response")
+            return response
         } catch (e: ResponseException) {
             logger.warn("An error occurred while making a request to $fullUrl, details: ${e.message}, response: ${e.response.readText()}")
         }
+        return null
     }
 }
 

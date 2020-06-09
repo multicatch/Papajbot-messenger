@@ -6,10 +6,15 @@ import io.github.multicatch.papajbot.handlers.TalkHandler
 import io.github.multicatch.papajbot.model.GetStartedAction
 import io.github.multicatch.papajbot.model.MessengerConfiguration
 import io.github.multicatch.papajbot.talk.*
+import io.github.multicatch.videos.VideoResponseHandler
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
+import io.ktor.client.features.HttpTimeout
+import io.ktor.http.content.files
+import io.ktor.http.content.resources
+import io.ktor.http.content.static
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.routing
@@ -29,7 +34,12 @@ fun main() {
 
     val api = MessengerApi(
             token = System.getenv("PAPAJ_FB_TOKEN"),
-            client = HttpClient(Apache),
+            client = HttpClient(Apache) {
+                install(HttpTimeout) {
+                    requestTimeoutMillis = 70000
+                    socketTimeoutMillis = 70000
+                }
+            },
             json = PapajJson
     )
 
@@ -45,7 +55,13 @@ fun main() {
             host = "0.0.0.0"
             port = 2137
         }
-        module { papajbot(verifyToken, api, handlers) }
+        module {
+            papajbot(verifyToken, api, handlers) {
+                static("static") {
+                    resources("videos")
+                }
+            }
+        }
     }
 
     mainLogger.info("Starting Papajbot Messenger server...")
@@ -62,6 +78,10 @@ val mainLogger: Logger = LoggerFactory.getLogger("io.github.multicatch.papajbot.
 
 val handlers = listOf(
         FeatureVideoHandler(),
+        VideoResponseHandler(
+                "https://ca.vpcloud.eu:2137/static",
+                responseProbability = 0.8
+        ),
         TalkHandler(SimpleResponder(
                 responseStrategyAdapters = listOf(
                         Greetings(),
@@ -72,6 +92,5 @@ val handlers = listOf(
                         ConversationContinuation()
                 ),
                 defaultResponses = defaultResponses
-        )),
-        PlainMessageHandler()
+        ))
 )
