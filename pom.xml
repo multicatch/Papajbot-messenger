@@ -11,6 +11,7 @@
         <module>papajbot-web</module>
         <module>papajbot-model</module>
         <module>papajbot-talk</module>
+        <module>papajbot-server-core</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -43,6 +44,11 @@
             <dependency>
                 <groupId>io.ktor</groupId>
                 <artifactId>ktor-client-apache</artifactId>
+                <version>${ktor.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.ktor</groupId>
+                <artifactId>ktor-server-host-common</artifactId>
                 <version>${ktor.version}</version>
             </dependency>
             <dependency>

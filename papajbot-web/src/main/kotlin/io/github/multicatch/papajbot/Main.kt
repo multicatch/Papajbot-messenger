@@ -5,9 +5,7 @@ import io.github.multicatch.papajbot.handlers.PlainMessageHandler
 import io.github.multicatch.papajbot.handlers.TalkHandler
 import io.github.multicatch.papajbot.model.GetStartedAction
 import io.github.multicatch.papajbot.model.MessengerConfiguration
-import io.github.multicatch.papajbot.talk.Greetings
-import io.github.multicatch.papajbot.talk.SimpleResponder
-import io.github.multicatch.papajbot.talk.defaultResponses
+import io.github.multicatch.papajbot.talk.*
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.client.HttpClient
@@ -66,7 +64,12 @@ val handlers = listOf(
         FeatureVideoHandler(),
         TalkHandler(SimpleResponder(
                 responseStrategyAdapters = listOf(
-                        Greetings()
+                        Greetings(),
+                        Listening(),
+                        Confirmation(),
+                        TopicChange(),
+                        OpenQuestions(),
+                        ConversationContinuation()
                 ),
                 defaultResponses = defaultResponses
         )),

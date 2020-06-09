@@ -35,6 +35,8 @@ interface TalkMood {
 
     operator fun minus(mood: TalkMood): TalkMood = talkMoodOf(this.value - mood.value)
     operator fun plus(mood: TalkMood): TalkMood = talkMoodOf(this.value + mood.value)
+    operator fun plus(value: Float): TalkMood = talkMoodOf(this.value + value)
+    operator fun plus(value: Double): TalkMood = talkMoodOf(this.value + value.toFloat())
 }
 
 data class SimpleTalkMood(override val value: Float) : TalkMood

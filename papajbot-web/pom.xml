@@ -14,7 +14,7 @@
     <dependencies>
         <dependency>
             <groupId>io.github.multicatch</groupId>
-            <artifactId>papajbot-model</artifactId>
+            <artifactId>papajbot-server-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

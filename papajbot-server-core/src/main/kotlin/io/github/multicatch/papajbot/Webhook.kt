@@ -15,13 +15,13 @@ import io.ktor.request.receiveText
 import io.ktor.response.respondText
 
 suspend fun ApplicationCall.verifyWebhook(verifyToken: String) {
-    mainLogger.info("Got webhook verification event")
+    serverLogger.info("Got webhook verification event")
     val tokenKey = "hub.verify_token"
     if (request.queryParameters[tokenKey] == verifyToken) {
-        mainLogger.debug("$tokenKey is valid")
+        serverLogger.debug("$tokenKey is valid")
         respondText(request.queryParameters["hub.challenge"] ?: "", ContentType.Text.Plain)
     } else {
-        mainLogger.debug("$tokenKey is incorrect")
+        serverLogger.debug("$tokenKey is incorrect")
         respondText("Wrong token", ContentType.Text.Plain)
     }
 }
@@ -32,10 +32,10 @@ suspend fun ApplicationCall.respondToWebhookEvent(
         configuration: MutableList<EventHandler>.() -> Unit = {}
 ) {
     val eventHandlers = initialHandlers.toMutableList().apply(configuration).toList()
-    mainLogger.debug("Current configuration: ${eventHandlers.size} Event Handlers")
+    serverLogger.debug("Current configuration: ${eventHandlers.size} Event Handlers")
     val body = receiveText()
-    mainLogger.debug("Received an event notification: $body")
-    val eventNotification = PapajJson.readValue<EventNotification>(body)
+    serverLogger.debug("Received an event notification: $body")
+    val eventNotification = io.github.multicatch.papajbot.PapajJson.readValue<EventNotification>(body)
 
     val action: (Event) -> Unit = { event ->
         val result = eventHandlers.fold(null as ApiCall?) { result, handler ->
@@ -43,7 +43,7 @@ suspend fun ApplicationCall.respondToWebhookEvent(
         }
 
         if (result != null) {
-            mainLogger.info("Event handled successfully, calling API.")
+            serverLogger.info("Event handled successfully, calling API.")
             api.send(result)
         }
     }
