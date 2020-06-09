@@ -1,38 +1,37 @@
 package io.github.multicatch.papajbot
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.multicatch.papajbot.model.ApiCall
 import io.github.multicatch.papajbot.model.MessengerConfiguration
 import io.ktor.client.HttpClient
-import io.ktor.client.features.ClientRequestException
 import io.ktor.client.features.ResponseException
 import io.ktor.client.request.post
 import io.ktor.client.statement.readText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import org.slf4j.LoggerFactory
 
 class MessengerApi(
         private val url: String = "https://graph.facebook.com/v2.6/me/",
         private val token: String,
         private val client: HttpClient,
-        private val json: Json = Json(configuration = JsonConfiguration.Default)
+        private val json: ObjectMapper
 ) {
     private val logger = LoggerFactory.getLogger(MessengerApi::class.java.name)
 
     fun configure(configuration: MessengerConfiguration) {
+        val requestBody = json.writeValueAsString(configuration)
         runBlocking {
-            val stringConfiguration = json.stringify(MessengerConfiguration.serializer(), configuration)
-            logger.info("Sending configuration: $stringConfiguration")
-            send("messenger_profile", stringConfiguration)
+            logger.info("Sending configuration: $requestBody")
+            send("messenger_profile", requestBody)
         }
     }
 
     fun send(apiCall: ApiCall) {
+        val requestBody = json.writeValueAsString(apiCall)
         runBlocking {
-            send("messages", json.stringify(ApiCall.serializer(), apiCall))
+            send("messages", requestBody)
         }
     }
 

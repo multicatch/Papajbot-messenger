@@ -1,55 +1,67 @@
 package io.github.multicatch.papajbot.model
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import com.fasterxml.jackson.annotation.JsonProperty
 
-@Serializable
+fun MessagingItem.respondWith(text: String? = null, attachment: Attachment? = null) = ApiCall(
+        recipient = sender,
+        message = ResponseMessage(text, attachment)
+)
+
 data class ApiCall(
         val recipient: ConversationParticipant,
         val message: ResponseMessage
 )
 
-@Serializable
 data class ResponseMessage(
         val text: String? = null,
         val attachment: Attachment? = null
 )
 
-@Serializable
 data class Attachment(
         val type: AttachmentType,
         val payload: AttachmentPayload
 )
 
-@Serializable
 enum class AttachmentType {
-    @SerialName("template") TEMPLATE,
-    @SerialName("video") VIDEO
+    @JsonProperty("template") TEMPLATE,
+    @JsonProperty("video") VIDEO
 }
 
-@Serializable
 data class AttachmentPayload(
-        @SerialName("attachment_id")
+        @JsonProperty("attachment_id")
         val id: String? = null,
         val url: String? = null,
-        @SerialName("is_reusable")
+        @JsonProperty("is_reusable")
         val isReusable: Boolean? = null,
-        @SerialName("template_type")
+        @JsonProperty("template_type")
         val templateType: TemplateType? = null,
         val elements: List<PayloadElement> = listOf()
 )
 
-@Serializable
 enum class TemplateType {
-    @SerialName("open_graph") OPEN_GRAPH,
-    @SerialName("media") MEDIA
+    @JsonProperty("open_graph") OPEN_GRAPH,
+    @JsonProperty("media") MEDIA
 }
 
-interface PayloadElement {
+data class PayloadElement(
+    @JsonProperty("media_type")
+    val mediaType: PayloadElementType? = null,
+    val url: String? = null,
+    val buttons: List<PayloadButton>? = null
+)
 
+enum class PayloadElementType {
+    @JsonProperty("video") VIDEO
 }
 
-@Serializable
-data class OpenGraphElement(
-        val url: String
-) : PayloadElement
+data class PayloadButton(
+        val type: PayloadButtonType,
+        val title: String,
+        val payload: String? = null,
+        val url: String? = null
+)
+
+enum class PayloadButtonType {
+    @JsonProperty("web_url") WEB_URL,
+    @JsonProperty("payload") PAYLOAD
+}

@@ -1,5 +1,10 @@
 package io.github.multicatch.papajbot
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.github.multicatch.papajbot.model.ApiCall
 import io.github.multicatch.papajbot.model.Event
 import io.github.multicatch.papajbot.model.EventNotification
@@ -8,8 +13,6 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receiveText
 import io.ktor.response.respondText
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 
 suspend fun ApplicationCall.verifyWebhook(verifyToken: String) {
     mainLogger.info("Got webhook verification event")
@@ -32,7 +35,7 @@ suspend fun ApplicationCall.respondToWebhookEvent(
     mainLogger.debug("Current configuration: ${eventHandlers.size} Event Handlers")
     val body = receiveText()
     mainLogger.debug("Received an event notification: $body")
-    val eventNotification = PapajJson.parse(EventNotification.serializer(), body)
+    val eventNotification = PapajJson.readValue<EventNotification>(body)
 
     val action: (Event) -> Unit = { event ->
         val result = eventHandlers.fold(null as ApiCall?) { result, handler ->
@@ -49,4 +52,7 @@ suspend fun ApplicationCall.respondToWebhookEvent(
     response.status(HttpStatusCode.OK)
 }
 
-val PapajJson = Json(configuration = JsonConfiguration(ignoreUnknownKeys = true))
+val PapajJson = ObjectMapper()
+        .registerModule(KotlinModule())
+        .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+        .setSerializationInclusion(JsonInclude.Include.NON_NULL)
