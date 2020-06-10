@@ -13,7 +13,7 @@ class VideoResponseHandler(
 ) : EventHandler {
 
     private val openKeyWords = listOf(
-            "jak", "co", "dlaczego", "kiedy", "o któr", "w który", "z który"
+            "jak", "to co", "ale co", "dlaczego", "kiedy", "o któr", "w który", "z który"
     )
 
     private val closedKeyWords = listOf(
@@ -87,12 +87,12 @@ class VideoResponseHandler(
     private fun String.reactionVideo(): String? {
         val lowerCaseMessage = toLowerCase()
 
-        if (openKeyWords.any { lowerCaseMessage.startsWith(it) }) {
-            return openQuestionResponses.random()
+        if (closedKeyWords.any { lowerCaseMessage.startsWith(it) }) {
+            return closedQuestionResponses.random()
         }
 
-        if (closedKeyWords.any { lowerCaseMessage.startsWith(it) } || lowerCaseMessage.contains("?")) {
-            return closedQuestionResponses.random()
+        if (openKeyWords.any { lowerCaseMessage.contains(it) } || lowerCaseMessage.contains("?")) {
+            return openQuestionResponses.random()
         }
 
         if (entertainedKeyWords.any { lowerCaseMessage.contains(it) }) {
