@@ -25,14 +25,17 @@ fun main() {
     val initialData = Base64.getDecoder().decode(APPLICATION_HEARTBEAT)
     mainLogger.info(String(initialData))
 
+    // Configure Messenger API
     val api = MessengerApi(
-            token = System.getenv("PAPAJ_FB_TOKEN"),
-            client = apacheClient,
-            json = PapajJson
+            token = System.getenv("PAPAJ_FB_TOKEN"), // Facebook token from the App Manager
+            client = apacheClient, // a HTTP Client used to send configuration to the Messenger API
+            json = PapajJson // a JSON serializer/deserializer
     )
 
+    // Token for webhook verification
     val verifyToken = System.getenv("PAPAJ_WEBHOOK_TOKEN")
 
+    // The bot server configuration
     val environment = applicationEngineEnvironment {
         ssl(
                 System.getenv("PAPAJ_KEYSTORE_ALIAS"),
@@ -56,6 +59,7 @@ fun main() {
     val server = embeddedServer(Netty, environment)
     server.start()
 
+    // Chatbot configuration in the Messenger API - used to display actions when user chats with the page
     mainLogger.info("Server started.")
     api.configure(MessengerConfiguration(
             getStarted = GetStartedAction(payload = "witam"),
