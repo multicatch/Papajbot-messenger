@@ -1,5 +1,6 @@
 package io.github.multicatch.papajbot
 
+import io.github.multicatch.papajbot.handlers.AskQuestionPayloadHandler
 import io.github.multicatch.papajbot.handlers.FeatureVideoHandler
 import io.github.multicatch.papajbot.handlers.TalkHandler
 import io.github.multicatch.papajbot.model.*
@@ -62,6 +63,11 @@ fun main() {
                     PersistentMenu(
                             callToActions = listOf(
                                     ActionCall(
+                                            title = "Chcę spytać ojca",
+                                            type = ActionType.POSTBACK,
+                                            payload = "pytaj"
+                                    ),
+                                    ActionCall(
                                             title = "Poproszę losowy film",
                                             type = ActionType.POSTBACK,
                                             payload = "video"
@@ -101,5 +107,6 @@ val handlers = listOf(
         YouTubeVideoHandler(
                 payloadTrigger = "video",
                 objectMapper = PapajJson
-        )
+        ),
+        AskQuestionPayloadHandler()
 )
